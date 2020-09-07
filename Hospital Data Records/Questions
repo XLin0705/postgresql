@@ -1,0 +1,41 @@
+--How many doctors are treating doctors?
+
+doctor=# select count (distinct foo) from (
+    select doctor_id1 from patSeeDoc where patIsDoc is true
+    union
+    select doctor_id2 from patSeeDoc where patIsDoc is true
+    union
+    select doctor_id3 from patSeeDoc where patIsDoc is true
+    union
+    select doctor_id4 from patSeeDoc where patIsDoc is true
+    union
+    select doctor_id5 from patSeeDoc where patIsDoc is true) as foo;
+
+
+--What's the count of how many patients have each kind of illness?
+
+doctor=# select illness_id, count(illness_id) from patHasIll group by illness_id;
+
+--What's the doctor with the most patients?
+
+select doctor_id1, count(*) as frequent from (
+    select doctor_id1 from patSeeDoc
+    union all
+    select doctor_id2 from patSeeDoc
+    union all
+    select doctor_id3 from patSeeDoc
+    union all
+    select doctor_id4 from patSeeDoc
+    union all
+    select doctor_id5 from patSeeDoc) as foo
+group by doctor_id1
+order by frequent desc;
+
+
+--What illness is being treated with the largest number of unique treatments?
+
+select illness_id, count(distinct treatment_id) from patHasIll
+join patHasTreat on patHasIll.patient_id=patHasTreat.patient_id
+group by illness_id
+order by count(distinct treatment_id);
+
